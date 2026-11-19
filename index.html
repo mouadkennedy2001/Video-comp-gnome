@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="زروقي أحمد معاذ">
+<meta name="theme-color" id="metaTheme" content="#fafafa">
+<link rel="manifest" href='data:application/manifest+json,{"name":"Video%20Compressor","short_name":"Compressor","start_url":".","display":"standalone","background_color":"%23242424","theme_color":"%233584e4","icons":[]}'>
+<title>ضاغط الفيديو</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --accent:#3584e4; --accent-hover:#4790e8; --accent-deep:#2665b0;
+  --destructive:#e01b24; --success:#26a269; --warning:#e5a50a;
+  --win:#fafafa; --header:#fff; --card:#fff;
+  --border:rgba(0,0,0,.16); --border-soft:rgba(0,0,0,.09); --row-sep:rgba(0,0,0,.06);
+  --text:rgba(0,0,0,.87); --text-2:rgba(0,0,0,.58); --text-3:rgba(0,0,0,.40);
+  --btn-bg:#fff; --input-bg:#fff; --hover:rgba(0,0,0,.06);
+  --switch-off:rgba(0,0,0,.36); --progress-bg:rgba(0,0,0,.12);
+  --toast-bg:#333; --toast-text:#fff;
+  --shadow:0 0 0 1px var(--border-soft),0 2px 8px rgba(0,0,0,.06);
+  --shadow-lg:0 0 0 1px var(--border-soft),0 8px 28px rgba(0,0,0,.10);
+}
+[data-theme="dark"]{
+  color-scheme:dark;
+  --win:#242424; --header:#2c2c2c; --card:#303030;
+  --border:rgba(255,255,255,.18); --border-soft:rgba(255,255,255,.08); --row-sep:rgba(255,255,255,.07);
+  --text:rgba(255,255,255,.90); --text-2:rgba(255,255,255,.60); --text-3:rgba(255,255,255,.40);
+  --btn-bg:#3d3d3d; --input-bg:#1f1f1f; --hover:rgba(255,255,255,.08);
+  --switch-off:#5e5e5e; --progress-bg:rgba(255,255,255,.14);
+  --toast-bg:#f2f2f2; --toast-text:#222;
+  --shadow:0 0 0 1px var(--border-soft),0 2px 10px rgba(0,0,0,.35);
+  --shadow-lg:0 0 0 1px var(--border-soft),0 10px 34px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--win);color:var(--text);font-family:"Cantarell","Noto Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif;min-height:100vh;transition:background .25s}
+::selection{background:var(--accent);color:#fff}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-thumb{background:var(--switch-off);border-radius:99px;border:3px solid var(--win)}
+.hidden{display:none!important}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+svg{display:block}
+kbd{font:600 10px/1 ui-monospace,monospace;background:var(--hover);border:1px solid var(--border-soft);border-radius:5px;padding:3px 5px;opacity:.75}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.headerbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:var(--header);border-bottom:1px solid var(--border-soft);box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.hb-title{display:flex;align-items:center;gap:12px;min-width:0}
+.app-icon{width:38px;height:38px;border-radius:10px;flex:none;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,#4a90e4,#2b64b8);box-shadow:0 1px 3px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+.app-icon svg{width:21px;height:21px}
+.hb-title h1{font-size:16px;font-weight:800;margin:0;white-space:nowrap}
+.hb-title small{display:block;font-size:11px;color:var(--text-3);font-weight:600}
+.hb-actions{display:flex;align-items:center;gap:6px}
+.engine-chip{display:inline-flex;align-items:center;gap:8px;font:inherit;font-size:12px;font-weight:700;color:var(--text-2);background:var(--hover);border:0;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .15s}
+.engine-chip:hover{background:color-mix(in srgb,var(--hover),var(--text) 6%)}
+.engine-chip svg{width:15px;height:15px}
+.engine-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--switch-off);flex:none}
+.engine-chip[data-status="loading"] .dot{background:var(--warning);animation:pulse 1s infinite}
+.engine-chip[data-status="ready"] .dot{background:var(--success)}
+.engine-chip[data-status="error"] .dot{background:var(--destructive)}
+@keyframes pulse{50%{opacity:.25}}
+.icon-btn{width:36px;height:36px;border-radius:999px;border:0;background:transparent;color:var(--text-2);display:grid;place-items:center;cursor:pointer;transition:background .15s}
+.icon-btn:hover{background:var(--hover)}
+.icon-btn svg{width:18px;height:18px}
+.lang-btn{font:inherit;font-size:12px;font-weight:800;color:var(--text-2);background:var(--hover);border:0;border-radius:999px;padding:8px 12px;cursor:pointer;min-width:40px}
+.lang-btn:hover{background:color-mix(in srgb,var(--hover),var(--text) 6%)}
+
+main{max-width:760px;margin-inline:auto;padding:22px 18px 40px}
+main>*{animation:fadeUp .5s both}
+main>*:nth-child(2){animation-delay:.05s}main>*:nth-child(3){animation-delay:.08s}main>*:nth-child(4){animation-delay:.11s}main>*:nth-child(5){animation-delay:.14s}main>*:nth-child(6){animation-delay:.17s}main>*:nth-child(7){animation-delay:.2s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}}
+.group-title{font-size:13px;font-weight:800;color:var(--text-2);margin:28px 6px 10px;display:flex;align-items:center;gap:8px}
+.group-title::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--accent)}
+.card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.card-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--row-sep)}
+.card-head .bub{width:34px;height:34px;border-radius:9px;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent)}
+.card-head .bub svg{width:18px;height:18px}
+.card-head h2{margin:0;font-size:15px;font-weight:800}
+.card-head p{margin:1px 0 0;font-size:12px;color:var(--text-2)}
+
+.dropzone{position:relative}
+.drop-inner{margin:12px;border:2px dashed var(--border);border-radius:12px;padding:46px 22px;text-align:center;transition:border-color .2s,background .2s;cursor:pointer}
+.drop-inner:hover{border-color:var(--accent)}
+.dropzone.locked{pointer-events:none;opacity:.5}
+.drag-overlay{position:absolute;inset:8px;border-radius:14px;z-index:5;display:none;place-items:center;background:color-mix(in srgb,var(--accent) 14%,var(--card));outline:3px dashed var(--accent);outline-offset:-14px;backdrop-filter:blur(3px)}
+.dropzone.drag .drag-overlay{display:grid}
+.drag-overlay .in{display:flex;flex-direction:column;align-items:center;gap:12px;color:var(--accent);font-weight:800;font-size:17px}
+.drag-overlay svg{width:52px;height:52px;animation:bob 1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.big-ico{width:88px;height:88px;border-radius:50%;margin:0 auto 18px;display:grid;place-items:center;background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent)}
+.big-ico svg{width:40px;height:40px}
+.drop-inner h2{margin:0 0 6px;font-size:20px;font-weight:800}
+.drop-inner p{margin:0 0 18px;color:var(--text-2);font-size:14px;line-height:1.7}
+.privacy-note{display:inline-flex;align-items:center;gap:7px;font-size:12px!important;color:var(--text-3)!important;margin-top:14px!important;background:var(--hover);padding:7px 14px;border-radius:999px}
+.privacy-note svg{width:13px;height:13px}
+
+.file-info{padding:16px 18px;display:flex;flex-direction:column;gap:14px}
+.file-info video{width:100%;max-height:300px;border-radius:12px;background:#000}
+.file-meta .name{font-weight:700;font-size:14px;overflow-wrap:anywhere}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-2);background:var(--hover);padding:5px 12px;border-radius:999px}
+.chip svg{width:13px;height:13px}
+
+.segmented{display:grid;grid-template-columns:repeat(4,1fr);margin:8px;border:1px solid var(--border-soft);border-radius:11px;overflow:hidden}
+.seg{appearance:none;border:0;background:transparent;padding:14px 4px;cursor:pointer;font:inherit;font-size:12.5px;font-weight:700;color:var(--text-2);display:flex;flex-direction:column;align-items:center;gap:8px;transition:background .18s,color .18s}
+.seg+.seg{border-inline-start:1px solid var(--row-sep)}
+.seg svg{width:20px;height:20px}
+.seg:hover{background:var(--hover)}
+.seg.active{background:var(--accent);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.seg:disabled{opacity:.5;cursor:default}
+
+.row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 18px;flex-wrap:wrap;transition:background .15s}
+.row:hover{background:color-mix(in srgb,var(--card),var(--text) 2%)}
+.row+.row{border-top:1px solid var(--row-sep)}
+.row-info h3{margin:0;font-size:15px;font-weight:700}
+.row-info p{margin:3px 0 0;font-size:12.5px;color:var(--text-2)}
+.row-control{display:flex;align-items:center;gap:12px;margin-inline-start:auto}
+.select-wrap{position:relative;flex:none}
+.select-wrap>svg{position:absolute;inset-inline-end:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text-2);pointer-events:none}
+select{appearance:none;font:inherit;font-size:14px;font-weight:600;color:var(--text);background:var(--input-bg);border:1px solid var(--border);border-radius:9px;padding:9px 14px;padding-inline-end:34px;min-width:150px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+select:hover{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+select:disabled{opacity:.45;cursor:default;box-shadow:none}
+.switch{position:relative;display:inline-block;width:50px;height:30px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:2}
+.track{position:absolute;inset:0;border-radius:999px;background:var(--switch-off);transition:background .2s}
+.knob{position:absolute;top:4px;inset-inline-start:4px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:inset-inline-start .2s}
+.switch input:checked+.track{background:var(--accent)}
+.switch input:checked+.track .knob{inset-inline-start:24px}
+.switch input:disabled~.track{opacity:.4}
+input[type=range]{accent-color:var(--accent);width:170px;cursor:pointer}
+.range-val{font-size:13px;font-weight:700;color:var(--text-2);min-width:92px;text-align:center;background:var(--hover);padding:5px 10px;border-radius:8px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:14px;font-weight:700;color:var(--text);background:var(--btn-bg);border:1px solid var(--border);border-radius:10px;padding:10px 18px;cursor:pointer;transition:background .15s,transform .06s;background-image:linear-gradient(color-mix(in srgb,var(--btn-bg),#fff 4%),transparent)}
+.btn:hover{background-color:color-mix(in srgb,var(--btn-bg),var(--text) 8%)}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn svg{width:17px;height:17px}
+.btn.suggested{background:linear-gradient(180deg,var(--accent-hover),var(--accent));border-color:var(--accent-deep);color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.2)}
+.btn.suggested:hover{background:linear-gradient(180deg,#5a9bec,var(--accent-hover))}
+.btn.big{width:100%;padding:14px;font-size:16px;border-radius:12px}
+.btn.danger-outline{color:var(--destructive);background:transparent;border-color:color-mix(in srgb,var(--destructive) 45%,transparent)}
+.btn.danger-outline:hover{background:color-mix(in srgb,var(--destructive) 10%,transparent)}
+.spinner{width:17px;height:17px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex:none}
+.spinner.dark{border-color:color-mix(in srgb,var(--text) 25%,transparent);border-top-color:var(--text)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.action-area{margin-top:26px;display:flex;flex-direction:column;gap:14px}
+.estimate{align-self:center;display:inline-flex;align-items:center;gap:9px;font-size:13.5px;color:var(--text-2);background:var(--card);box-shadow:var(--shadow);padding:9px 18px;border-radius:999px;font-weight:600}
+.estimate svg{width:16px;height:16px;color:var(--accent)}
+.estimate b{color:var(--text);font-size:15px}
+.estimate small{color:var(--text-3);font-size:11px}
+.progress-wrap{display:flex;flex-direction:column;gap:10px}
+.progress{height:9px;border-radius:999px;background:var(--progress-bg);overflow:hidden;position:relative}
+.progress-fill{height:100%;width:0%;border-radius:999px;transition:width .25s;position:relative;overflow:hidden;background:linear-gradient(90deg,var(--accent),#62a0ea)}
+.progress-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);animation:shine 1.6s infinite}
+@keyframes shine{to{transform:translateX(100%)}}
+.progress-wrap.indeterminate .progress-fill{width:35%!important;animation:ind 1.2s ease-in-out infinite}
+.progress-wrap.indeterminate .progress-fill::after{display:none}
+@keyframes ind{from{transform:translateX(-110%)}to{transform:translateX(320%)}}
+.progress-meta{display:flex;align-items:center;gap:14px;font-size:13.5px;font-weight:600}
+.progress-meta .pct{font-size:17px;font-weight:800;color:var(--accent);min-width:52px}
+.progress-meta .elapsed{color:var(--text-2);flex:1;display:inline-flex;align-items:center;gap:6px}
+.progress-meta .elapsed svg{width:14px;height:14px}
+.hint{text-align:center;font-size:12.5px;color:var(--text-3);line-height:1.9;margin:2px 0 0}
+
+.result-card{margin-top:26px;animation:rise .45s ease;box-shadow:var(--shadow-lg)}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}}
+.result-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--row-sep)}
+.result-head .ok{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;background:color-mix(in srgb,var(--success) 16%,transparent);color:var(--success)}
+.result-head .ok svg{width:20px;height:20px}
+.result-head h2{margin:0;font-size:17px;font-weight:800}
+.result-head p{margin:2px 0 0;font-size:12.5px;color:var(--text-2)}
+.result-body{padding:18px;display:flex;flex-direction:column;gap:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:color-mix(in srgb,var(--card),var(--text) 5%);border-radius:12px;padding:14px 10px;text-align:center}
+.stat .v{font-size:19px;font-weight:800;overflow-wrap:anywhere}
+.stat .l{font-size:11.5px;color:var(--text-2);margin-top:4px;font-weight:600}
+.stat.good .v{color:var(--success)}.stat.bad .v{color:var(--destructive)}
+.result-body video{width:100%;max-height:360px;border-radius:12px;background:#000}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap}
+.result-actions .suggested{flex:1;min-width:200px}
+
+.footer{padding:10px 18px 46px;display:flex;justify-content:center}
+.dev-card{display:flex;align-items:center;gap:12px;background:var(--card);box-shadow:var(--shadow);padding:12px 22px;border-radius:999px}
+.dev-card .dev-ico{width:36px;height:36px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;background:linear-gradient(150deg,#616161,#3d3d3d);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.dev-card .dev-ico svg{width:17px;height:17px}
+.dev-card b{display:block;font-size:11px;color:var(--text-3);font-weight:700}
+.dev-card span.name{font-size:14px;font-weight:800;color:var(--text)}
+.ver-badge{font-size:11px;font-weight:800;color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent);padding:5px 11px;border-radius:999px;margin-inline-start:6px}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,90px);opacity:0;z-index:200;display:flex;align-items:center;gap:10px;max-width:92vw;background:var(--toast-bg);color:var(--toast-text);padding:12px 22px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 6px 24px rgba(0,0,0,.3);transition:.35s cubic-bezier(.2,.9,.3,1.2)}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.toast svg{width:17px;height:17px;flex:none}
+.toast.error{background:var(--destructive);color:#fff}
+.toast.success{background:var(--success);color:#fff}
+
+dialog{border:0;border-radius:18px;background:var(--card);color:var(--text);padding:0;max-width:460px;width:calc(100% - 40px);box-shadow:0 12px 48px rgba(0,0,0,.4)}
+dialog[open]{animation:dlg .25s ease}
+@keyframes dlg{from{opacity:0;transform:scale(.94) translateY(10px)}}
+dialog::backdrop{background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+dialog.wide{max-width:560px}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--row-sep)}
+.dlg-head h2{margin:0;font-size:15px;font-weight:800}
+.dlg-body{padding:22px 22px 20px}
+.dlg-status{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.dlg-status .bub{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--hover);color:var(--text-2)}
+.dlg-status .bub svg{width:22px;height:22px}
+.dlg-status[data-s="loading"] .bub{background:color-mix(in srgb,var(--warning) 16%,transparent);color:var(--warning)}
+.dlg-status[data-s="ready"] .bub{background:color-mix(in srgb,var(--success) 16%,transparent);color:var(--success)}
+.dlg-status[data-s="error"] .bub{background:color-mix(in srgb,var(--destructive) 16%,transparent);color:var(--destructive)}
+.dlg-status h3{margin:0;font-size:15px;font-weight:800}
+.dlg-status p{margin:3px 0 0;font-size:12.5px;color:var(--text-2);line-height:1.6}
+.dlg-bar{height:7px;border-radius:99px;background:var(--progress-bg);overflow:hidden;margin-bottom:8px}
+.dlg-bar>div{height:100%;width:0%;background:var(--accent);border-radius:99px;transition:width .3s}
+.dlg-step{font-size:12px;color:var(--text-2);font-weight:600;min-height:17px;margin-bottom:14px}
+.diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.diag{background:color-mix(in srgb,var(--card),var(--text) 5%);border-radius:10px;padding:9px 12px}
+.diag b{display:block;font-size:10.5px;color:var(--text-3);font-weight:700;margin-bottom:2px}
+.diag span{font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.diag.warn span{color:var(--warning)} .diag.good span{color:var(--success)}
+.dlg-note{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--text-2);line-height:1.8;background:color-mix(in srgb,var(--warning) 10%,transparent);border-radius:10px;padding:11px 14px;margin-bottom:12px}
+.dlg-note svg{width:15px;height:15px;flex:none;color:var(--warning);margin-top:3px}
+.dlg-note code{direction:ltr;background:var(--hover);padding:2px 7px;border-radius:6px;font-size:11px}
+.dlg-actions{display:flex;gap:10px;flex-wrap:wrap}
+.dlg-actions .btn{flex:1;min-width:120px}
+
+.log-list{max-height:300px;overflow:auto;display:flex;flex-direction:column;gap:4px;background:color-mix(in srgb,var(--card),var(--text) 4%);border-radius:12px;padding:10px;margin-bottom:14px;font-size:12px}
+.log-row{display:flex;gap:8px;align-items:flex-start;padding:5px 8px;border-radius:8px;background:var(--card)}
+.log-row .lt{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--text-3);flex:none;padding-top:2px}
+.log-row .li{flex:none;padding-top:1px}
+.log-row .li svg{width:13px;height:13px}
+.log-row .lm{line-height:1.6;overflow-wrap:anywhere}
+.log-row.ok .li{color:var(--success)} .log-row.warn .li{color:var(--warning)} .log-row.err .li{color:var(--destructive)} .log-row.info .li{color:var(--accent)}
+.log-empty{color:var(--text-3);text-align:center;padding:22px;font-weight:600}
+
+.dlg-body.center{text-align:center}
+.dlg-body.center .app-icon{width:74px;height:74px;border-radius:18px;margin:0 auto 14px}
+.dlg-body.center .app-icon svg{width:38px;height:38px}
+.dlg-body.center h2{margin:0 0 4px;font-size:21px;font-weight:800}
+.dlg-feats{margin:14px 0 0;padding:14px 18px;border-radius:12px;background:color-mix(in srgb,var(--card),var(--text) 5%);text-align:start;font-size:12.5px;color:var(--text-2);line-height:2}
+.dlg-feats b{color:var(--text)}
+.dev-line{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;font-weight:700;color:var(--text-2)}
+.dev-line .mini{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(150deg,#616161,#3d3d3d);color:#fff}
+.dev-line .mini svg{width:14px;height:14px}
+.dev-line b{color:var(--text)}
+
+@media (max-width:560px){
+  .segmented{grid-template-columns:repeat(2,1fr)}
+  .seg:nth-child(3){border-inline-start:0;border-top:1px solid var(--row-sep)}
+  .seg:nth-child(4){border-top:1px solid var(--row-sep)}
+  .stats{grid-template-columns:1fr}
+  .row-control{width:100%;justify-content:flex-end}
+  .diag-grid{grid-template-columns:1fr}
+  .hb-title small{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="headerbar">
+  <div class="hb-title">
+    <div class="app-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h11a2 2 0 0 1 2 2v2.5l4-2.5v10l-4-2.5V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg></div>
+    <div><h1 data-t="app_title"></h1><small data-t="app_sub"></small></div>
+  </div>
+  <div class="hb-actions">
+    <button class="engine-chip" id="engineChip" data-status="idle" data-t-title="tt_engine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"/></svg>
+      <span class="dot"></span><span id="engineChipText"></span>
+    </button>
+    <button class="lang-btn" id="langBtn" data-t-title="tt_lang">EN</button>
+    <button class="icon-btn" id="btnLog" data-t-title="tt_log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+    <button class="icon-btn" id="btnTheme" data-t-title="tt_theme">
+      <svg id="icoAuto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M12 4v13H2" fill="currentColor" stroke="none" opacity=".35"/></svg>
+      <svg id="icoSun" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      <svg id="icoMoon" class="hidden" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+    </button>
+    <button class="icon-btn" id="btnAbout" data-t-title="tt_about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></svg></button>
+  </div>
+</header>
+
+<main>
+  <section class="card dropzone" id="dropzone">
+    <div class="drag-overlay"><div class="in">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2"/></svg>
+      <span data-t="overlay_drop"></span>
+    </div></div>
+    <div class="drop-inner" id="dropInner" tabindex="0" role="button">
+      <div id="emptyState">
+        <div class="big-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 15v2a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-2"/></svg></div>
+        <h2 data-t="drop_h"></h2>
+        <p data-t="drop_p"></p>
+        <button class="btn suggested" id="btnBrowse" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
+          <span data-t="btn_browse"></span> <kbd>Ctrl+O</kbd>
+        </button>
+        <p class="privacy-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          <span data-t="privacy_note"></span>
+        </p>
+      </div>
+      <div id="fileState" class="hidden">
+        <div class="file-info" style="padding:0;text-align:start">
+          <video id="previewVideo" controls preload="metadata"></video>
+          <div class="file-meta"><span class="name" id="fileName"></span></div>
+          <div class="chips">
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/></svg><span id="chipSize">—</span></span>
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span id="chipDuration">—</span></span>
+            <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M9 5v14"/></svg><span id="chipDims">—</span></span>
+          </div>
+          <div><button class="btn" id="btnChange" type="button"><span data-t="btn_change"></span></button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <input type="file" id="fileInput" class="hidden" accept="video/*,.mkv,.mov,.avi,.m4v,.mpg,.mpeg,.ts,.flv,.wmv,.3gp,.ogv">
+
+  <h2 class="group-title" data-t="grp_presets"></h2>
+  <section class="card"><div class="segmented" id="presetSeg" role="radiogroup"></div></section>
+
+  <h2 class="group-title" data-t="grp_video"></h2>
+  <section class="card">
+    <div class="card-head">
+      <span class="bub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg></span>
+      <div><h2 data-t="cv_h"></h2><p data-t="cv_p"></p></div>
+    </div>
+    <div class="row">
+      <div class="row-info"><h3 data-t="r_fmt_h"></h3><p data-t="r_fmt_p"></p></div>
+      <div class="row-control"><div class="select-wrap">
+        <select id="selFormat">
+          <option value="mp4" selected data-t="o_mp4"></option>
+          <option value="webm" data-t="o_webm"></option>
+          <option value="mkv" data-t="o_mkv"></option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="row-info"><h3 data-t="r_res_h"></h3><p data-t="r_res_p"></p></div>
+      <div class="row-control"><div class="select-wrap">
+        <select id="selRes">
+          <option value="orig" data-t="o_orig"></option>
+          <option value="1080">1080p</option><option value="720" selected>720p</option>
+          <option value="480">480p</option><option value="360">360p</option><option value="240">240p</option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="row-info"><h3 data-t="r_fps_h"></h3><p data-t="r_fps_p"></p></div>
+      <div class="row-control"><div class="select-wrap">
+        <select id="selFps">
+          <option value="auto" selected data-t="o_fauto"></option>
+          <option value="30" data-t="o_f30"></option><option value="24" data-t="o_f24"></option>
+          <option value="20" data-t="o_f20"></option><option value="15" data-t="o_f15"></option><option value="10" data-t="o_f10"></option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div></div>
+    </div>
+    <div class="row">
+      <div class="row-info"><h3 data-t="r_cb_h"></h3><p data-t="r_cb_p"></p></div>
+      <div class="row-control"><label class="switch"><input type="checkbox" id="swBitrate"><span class="track"><span class="knob"></span></span></label></div>
+    </div>
+    <div class="row hidden" id="bitrateRow">
+      <div class="row-info"><h3 data-t="r_cbv_h"></h3></div>
+      <div class="row-control">
+        <input type="range" id="rngBitrate" min="200" max="8000" step="50" value="1500">
+        <span class="range-val" id="bitrateVal">1500</span>
+      </div>
+    </div>
+  </section>
+
+  <h2 class="group-title" data-t="grp_audio"></h2>
+  <section class="card">
+    <div class="card-head">
+      <span class="bub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></span>
+      <div><h2 data-t="ca_h"></h2><p data-t="ca_p"></p></div>
+    </div>
+    <div class="row">
+      <div class="row-info"><h3 data-t="r_keep_h"></h3><p data-t="r_keep_p"></p></div>
+      <div class="row-control"><label class="switch"><input type="checkbox" id="swAudio" checked><span class="track"><span class="knob"></span></span></label></div>
+    </div>
+    <div class="row">
+      <div class="row-info"><h3 data-t="r_abr_h"></h3></div>
+      <div class="row-control"><div class="select-wrap">
+        <select id="selAbr">
+          <option value="128" data-t="o_a128"></option><option value="96" selected data-t="o_a96"></option>
+          <option value="64" data-t="o_a64"></option><option value="32" data-t="o_a32"></option>
+        </select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div></div>
+    </div>
+  </section>
+
+  <div class="action-area">
+    <div class="estimate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9" opacity=".4"/><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 9V4m-4 4.5L6 6.5m10 2 2-2"/></svg>
+      <span data-t="est_label"></span> <b id="estSize">—</b> <small data-t="est_approx"></small>
+    </div>
+    <button class="btn suggested big" id="btnCompress" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg>
+      <span data-t="btn_compress"></span>
+    </button>
+    <div class="progress-wrap hidden" id="progressWrap" aria-live="polite">
+      <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-meta">
+        <span class="pct" id="progressPct">0%</span>
+        <span class="elapsed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span id="progressElapsed">00:00</span></span>
+        <button class="btn danger-outline" id="btnCancel" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          <span data-t="btn_cancel"></span>
+        </button>
+      </div>
+    </div>
+    <p class="hint"><span data-t="hint1"></span><br><span data-t="hint2"></span></p>
+  </div>
+
+  <section class="card result-card hidden" id="resultCard">
+    <div class="result-head">
+      <div class="ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg></div>
+      <div><h2 data-t="res_h"></h2><p id="resultSummary"></p></div>
+    </div>
+    <div class="result-body">
+      <div class="stats">
+        <div class="stat"><div class="v" id="statBefore">—</div><div class="l" data-t="s_before"></div></div>
+        <div class="stat"><div class="v" id="statAfter">—</div><div class="l" data-t="s_after"></div></div>
+        <div class="stat good" id="statSaveBox"><div class="v" id="statSave">—</div><div class="l" data-t="s_save"></div></div>
+      </div>
+      <video id="outputVideo" controls preload="metadata"></video>
+      <div class="result-actions">
+        <button class="btn suggested" id="btnSave">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg>
+          <span data-t="btn_save"></span>
+        </button>
+        <button class="btn" id="btnAnother" type="button"><span data-t="btn_another"></span></button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="dev-card">
+    <span class="dev-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4m8-8 4 4-4 4"/></svg></span>
+    <div><b data-t="dev_by"></b><span class="name" data-t="dev_name"></span></div>
+    <span class="ver-badge">v4.0-alpha</span>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<dialog id="engineDialog">
+  <div class="dlg-head"><h2 data-t="eng_h"></h2>
+    <button class="icon-btn" id="engCloseX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="dlg-body">
+    <div class="dlg-status" id="engStatus" data-s="idle">
+      <span class="bub" id="engBub"></span>
+      <div><h3 id="engTitle"></h3><p id="engSub"></p></div>
+    </div>
+    <div class="dlg-bar"><div id="engBar"></div></div>
+    <div class="dlg-step" id="engStep"></div>
+    <div class="diag-grid" id="engDiag"></div>
+    <div class="dlg-note hidden" id="engHintFile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span data-t-html="hint_file"></span></div>
+    <div class="dlg-note hidden" id="engHintBrave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span data-t-html="hint_brave"></span></div>
+    <div class="dlg-note hidden" id="engHintSW"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg><span><span data-t-html="hint_sw"></span>
+      <span style="display:inline-flex;gap:8px;margin-top:8px">
+        <button class="btn" id="btnSWdl" style="padding:6px 12px;font-size:12px"><span data-t="btn_sw"></span></button>
+        <button class="btn hidden" id="btnSWreload" style="padding:6px 12px;font-size:12px"><span data-t="btn_reload"></span></button>
+      </span></span></div>
+    <div class="row" style="padding:0 0 14px">
+      <div class="row-info"><h3 style="font-size:13.5px" data-t="eng_mirror"></h3></div>
+      <div class="row-control"><div class="select-wrap">
+        <select id="engMirror" style="min-width:170px"></select>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg>
+      </div></div>
+    </div>
+    <div class="dlg-actions">
+      <button class="btn suggested" id="engBtn"></button>
+      <button class="btn" id="engClose"><span data-t="btn_close"></span></button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="logDialog" class="wide">
+  <div class="dlg-head"><h2 data-t="log_h"></h2>
+    <button class="icon-btn" id="logCloseX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="dlg-body">
+    <div class="log-list" id="logList"></div>
+    <div class="dlg-actions">
+      <button class="btn" id="logCopy"><span data-t="log_copy"></span></button>
+      <button class="btn" id="logDl"><span data-t="log_dl"></span></button>
+      <button class="btn danger-outline" id="logClear"><span data-t="log_clear"></span></button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="aboutDialog">
+  <div class="dlg-body center">
+    <div class="app-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h11a2 2 0 0 1 2 2v2.5l4-2.5v10l-4-2.5V17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/></svg></div>
+    <h2 data-t="app_title"></h2>
+    <div style="font-size:13px;color:var(--text-2);font-weight:700" data-t="app_sub"></div>
+    <p style="font-size:13.5px;color:var(--text-2);line-height:1.9;margin:12px 0 0" data-t="about_desc"></p>
+    <div class="dlg-feats" id="aboutFeats"></div>
+    <div class="dev-line">
+      <span class="mini"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4m8-8 4 4-4 4"/></svg></span>
+      <span data-t="dev_by"></span> <b data-t="dev_name"></b>
+    </div>
+    <button class="btn suggested" id="btnCloseAbout" style="margin-top:18px;min-width:130px"><span data-t="btn_close"></span></button>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+/* ═══════════════════════════════════════════════════════════
+   ضاغط الفيديو 4.0-alpha — GNOME Edition
+   تطوير: زروقي أحمد معاذ
+   إصلاح SharedArrayBuffer: بوابة قدرة + نواة ST + classWorkerURL دائم
+═══════════════════════════════════════════════════════════ */
+const $=s=>document.querySelector(s), $$=s=>document.querySelectorAll(s);
+const DEBUG=false;
+const SAB_OK = typeof SharedArrayBuffer !== 'undefined';
+const ISOLATED = !!self.crossOriginIsolated;
+const SECURE = !!window.isSecureContext;
+
+const state={file:null,running:false,cancel:false,preset:'balanced'};
+let ff=null,loadPromise=null,wakeLock=null,outputBlob=null,outputName='';
+let inputURL=null,outputURL=null,elapsedTimer=null,startTs=0,swNeedsReload=false;
+const meta={duration:0,width:0,height:0};
+
+/* ─────────── i18n ─────────── */
+const I18N={
+ar:{
+doc_title:"ضاغط الفيديو",app_title:"ضاغط الفيديو",app_sub:"الإصدار 4.0‑alpha — أسلوب GNOME",
+tt_engine:"إدارة محرك الضغط",tt_lang:"تبديل اللغة",tt_log:"سجل الأحداث",tt_theme:"المظهر",tt_about:"حول التطبيق",
+chip_idle:"المحرك غير محمّل",chip_loading:"تحميل المحرك…",chip_ready:"المحرك جاهز",chip_compat:"المحرك جاهز (متوافق)",chip_error:"مشكلة بالمحرك",
+overlay_drop:"أفلت الملف هنا",drop_h:"اختر فيديو للضغط",drop_p:"اسحب الملف وأفلته هنا أو انقر للاختيار.\nتُعالَج الملفات على جهازك فقط — لا يُرفَع أي شيء إلى الإنترنت.",
+btn_browse:"فتح ملف…",privacy_note:"معالجة محلية 100٪ داخل متصفحك",btn_change:"اختيار ملف آخر",
+grp_presets:"الإعدادات المسبقة",grp_video:"الفيديو",grp_audio:"الصوت",
+cv_h:"إعدادات الفيديو",cv_p:"الصيغة والأبعاد ومعدل الإطارات",ca_h:"إعدادات الصوت",ca_p:"مسار الصوت وجودته",
+r_fmt_h:"صيغة الإخراج",r_fmt_p:"MP4 متوافقة مع كل الأجهزة تقريباً",r_res_h:"الدقة",r_res_p:"الارتفاع بالبكسل مع الحفاظ على النسبة الأصلية",
+r_fps_h:"معدل الإطارات",r_fps_p:"تقليله يخفض الحجم بشكل ملحوظ",r_cb_h:"معدل بيانات مخصص",r_cb_p:"وضع متقدم — يتجاوز الجودة التلقائية",
+r_cbv_h:"قيمة معدل البيانات",r_keep_h:"الاحتفاظ بالصوت",r_keep_p:"أوقفه لتقليل الحجم أكثر",r_abr_h:"جودة الصوت",
+o_mp4:"MP4 (H.264)",o_webm:"WebM (VP8)",o_mkv:"MKV (H.264)",o_orig:"الأصلية (بدون تغيير)",
+o_fauto:"تلقائي (كما المصدر)",o_f30:"30 إطار/ث",o_f24:"24 إطار/ث",o_f20:"20 إطار/ث",o_f15:"15 إطار/ث",o_f10:"10 إطار/ث",
+o_a128:"128 ك.بت/ث",o_a96:"96 ك.بت/ث",o_a64:"64 ك.بت/ث",o_a32:"32 ك.بت/ث",
+p_high:"جودة عالية",p_bal:"متوازن",p_small:"حجم صغير",p_max:"أقصى ضغط",
+est_label:"الحجم التقديري للناتج:",est_approx:"(تقريب)",btn_compress:"ضغط الفيديو",btn_cancel:"إلغاء",
+hint1:"جارٍ الضغط بسرعة معالجة حقيقية — تتم كل العمليات محلياً على جهازك.",hint2:"أبقِ هذا التبويب مفتوحاً وظاهراً حتى ينتهي الضغط.",
+res_h:"اكتمل الضغط بنجاح",res_sum_save:"تم توفير {saved} من الحجم الأصلي",res_sum_grow:"الناتج أكبر من الأصل — جرّب إعدادات ضغط أقوى",
+s_before:"الحجم الأصلي",s_after:"بعد الضغط",s_save:"نسبة التوفير",btn_save:"حفظ الفيديو المضغوط",btn_another:"ضغط فيديو آخر",
+dev_by:"تطوير المبرمج",dev_name:"زروقي أحمد معاذ",
+about_desc:"ضاغط فيديو يعمل بالكامل داخل متصفحك عبر FFmpeg.wasm — خصوصية تامة، بدون خوادم، بتصميم مستوحى من Adwaita في GNOME.",
+about_feats:"<b>أبرز المميزات:</b><br>• معالجة محلية 100٪ بلا رفع للملفات<br>• عربي / إنجليزي بالكامل مع اتجاه تلقائي<br>• سجل أحداث شامل لكل تغيير وعملية<br>• 4 مرايا + نواة أحادية/متعددة الخيوط حسب قدرة المتصفح<br>• مظهر يتبع النظام + حفظ تلقائي للإعدادات<br>• حفظ عبر نافذة النظام الأصلية (حيث تتوفر)",
+th_auto:"تلقائي",th_light:"فاتح",th_dark:"داكن",
+eng_h:"محرك الضغط (FFmpeg.wasm)",eng_mirror:"مرآة التحميل",
+eng_idle_h:"المحرك غير محمّل",eng_idle_p:"سيُحمَّل تلقائياً عند أول ضغط، أو يدوياً من هنا.",
+eng_load_h:"جارٍ تحميل المحرك…",eng_load_p:"قد يستغرق التنزيل الأول بضع ثوانٍ حسب الاتصال.",
+eng_ready_h:"المحرك جاهز للعمل",eng_ready_p:"المرآة: {m} — النواة: {core}",
+eng_err_h:"تعذّر تحميل المحرك",eng_err_p:"{e}",
+eng_step_libs:"تنزيل مكتبات الواجهة من {m}…",eng_step_core:"تنزيل نواة WebAssembly…",eng_step_worker:"تجهيز عامل المعالجة…",eng_step_boot:"تشغيل المحرك…",eng_step_legacy:"تحميل النواة المتوافقة 0.11…",
+btn_eng_load:"تحميل المحرك الآن",btn_eng_retry:"إعادة المحاولة",btn_eng_reload:"إعادة تحميل المحرك",
+btn_sw:"تنزيل sw.js",btn_reload:"إعادة التحميل",btn_close:"إغلاق",
+d_page:"نوع الصفحة",d_secure:"سياق آمن",d_iso:"عزل COOP/COEP",d_sab:"SharedArrayBuffer",d_net:"الاتصال",d_browser:"المتصفح",d_err:"آخر خطأ",
+yes:"متوفر",no:"غير متوفر",on:"مفعّل",off:"غير مفعّل",
+hint_file:'الصفحة مفتوحة من القرص <code>file://</code> وقد يُقيَّد ذلك المحرك. الأفضل خادم محلي: <code>python -m http.server</code> ثم <code>localhost:8000</code>.',
+hint_brave:'تستخدم Brave: إن فشل تحميل السكربتات أوقف <b>Shields</b> لهذه الصفحة مؤقتاً (أيقونة الأسد).',
+hint_sw:'لتفعيل النواة متعددة الخيوط (أسرع كثيراً) على HTTPS/localhost: نزّل <code>sw.js</code> وضعه بجانب ملف HTML ثم أعد التحميل لتفعيل عزل COOP/COEP.',
+log_h:"سجل الأحداث",log_copy:"نسخ",log_dl:"تنزيل .txt",log_clear:"مسح",log_empty:"السجل فارغ حتى الآن.",
+l_theme:"تغيير المظهر → {v}",l_lang:"تغيير اللغة → {v}",l_file:"ملف جديد: {name} ({size})",l_bad_type:"رُفض ملف ليس فيديو",
+l_bad_size:"رُفض ملف أكبر من 2 ج.ب",l_set:"تغيير إعداد: {v}",l_preset:"إعداد مسبق → {v}",
+l_eng_start:"بدء تحميل المحرك (معزول={iso}, SAB={sab})",l_try:"محاولة: {m} / نواة {core}",l_fail:"فشل {m}: {e}",
+l_ok:"نجح المحرك: {m} / {core}",l_comp_start:"بدء الضغط…",l_comp_done:"اكتمل الضغط: {before} → {after} (توفير {save})",
+l_comp_cancel:"أُلغي الضغط",l_comp_err:"خطأ ضغط: {e}",l_sw_reg:"تم تسجيل sw.js — أعد التحميل لتفعيل العزل",l_save:"حُفظ الملف: {name}",l_save_abort:"أُلغي الحفظ",
+t_need_file:"اختر ملف فيديو أولاً",t_wait:"انتظر انتهاء الضغط الحالي أولاً",t_bad_type:"الملف المحدد ليس فيديو مدعوماً",
+t_big_size:"الملف أكبر من الحد الأقصى (2 ج.ب)",t_big_warn:"ملف كبير — قد يستغرق الضغط وقتاً طويلاً",
+t_eng_fail:"تعذر تحميل محرك الضغط — راجع نافذة المحرك",t_eng_ready:"المحرك جاهز للضغط",t_done:"تم ضغط الفيديو بنجاح",
+t_cancel:"تم إلغاء الضغط",t_err_webm:"فشل الضغط — جرّب MP4 أو أوقف الصوت",t_err_gen:"حدث خطأ أثناء الضغط — جرّب إعدادات أخرى",
+t_grew:"تنبيه: الملف الناتج أكبر من الأصل",t_copied:"نُسخ السجل",t_saved:"تم حفظ الملف",
+},
+en:{
+doc_title:"Video Compressor",app_title:"Video Compressor",app_sub:"Version 4.0‑alpha — GNOME style",
+tt_engine:"Compression engine",tt_lang:"Language",tt_log:"Event log",tt_theme:"Theme",tt_about:"About",
+chip_idle:"Engine not loaded",chip_loading:"Loading engine…",chip_ready:"Engine ready",chip_compat:"Engine ready (compat)",chip_error:"Engine problem",
+overlay_drop:"Drop file here",drop_h:"Choose a video to compress",drop_p:"Drag & drop a file here or click to browse.\nFiles are processed on your device only — nothing is uploaded.",
+btn_browse:"Open file…",privacy_note:"100% local processing in your browser",btn_change:"Choose another file",
+grp_presets:"Presets",grp_video:"Video",grp_audio:"Audio",
+cv_h:"Video settings",cv_p:"Format, dimensions & frame rate",ca_h:"Audio settings",ca_p:"Audio track & quality",
+r_fmt_h:"Output format",r_fmt_p:"MP4 works on almost every device",r_res_h:"Resolution",r_res_p:"Height in px, keeps aspect ratio",
+r_fps_h:"Frame rate",r_fps_p:"Lowering it reduces size noticeably",r_cb_h:"Custom bitrate",r_cb_p:"Advanced — overrides automatic quality",
+r_cbv_h:"Bitrate value",r_keep_h:"Keep audio",r_keep_p:"Disable to shrink size further",r_abr_h:"Audio quality",
+o_mp4:"MP4 (H.264)",o_webm:"WebM (VP8)",o_mkv:"MKV (H.264)",o_orig:"Original (unchanged)",
+o_fauto:"Auto (as source)",o_f30:"30 fps",o_f24:"24 fps",o_f20:"20 fps",o_f15:"15 fps",o_f10:"10 fps",
+o_a128:"128 kbps",o_a96:"96 kbps",o_a64:"64 kbps",o_a32:"32 kbps",
+p_high:"High quality",p_bal:"Balanced",p_small:"Small size",p_max:"Max compression",
+est_label:"Estimated output:",est_approx:"(approx.)",btn_compress:"Compress video",btn_cancel:"Cancel",
+hint1:"Compression runs at real processing speed — everything stays on your device.",hint2:"Keep this tab open and visible until finished.",
+res_h:"Compression completed",res_sum_save:"Saved {saved} of the original size",res_sum_grow:"Output is larger — try stronger settings",
+s_before:"Original",s_after:"Compressed",s_save:"Savings",btn_save:"Save compressed video",btn_another:"Compress another",
+dev_by:"Developed by",dev_name:"Zerouki Ahmed Moaadh",
+about_desc:"A video compressor running entirely in your browser via FFmpeg.wasm — full privacy, no servers, Adwaita/GNOME-inspired design.",
+about_feats:"<b>Highlights:</b><br>• 100% local processing, no uploads<br>• Full Arabic / English UI with auto direction<br>• Complete event log of every change & job<br>• 4 mirrors + single/multi-thread cores by capability<br>• System-following theme + auto-saved settings<br>• Native system save dialog where available",
+th_auto:"Auto",th_light:"Light",th_dark:"Dark",
+eng_h:"Compression engine (FFmpeg.wasm)",eng_mirror:"Download mirror",
+eng_idle_h:"Engine not loaded",eng_idle_p:"It loads automatically on first compression, or manually here.",
+eng_load_h:"Loading engine…",eng_load_p:"First download may take a few seconds.",
+eng_ready_h:"Engine ready",eng_ready_p:"Mirror: {m} — Core: {core}",
+eng_err_h:"Engine failed to load",eng_err_p:"{e}",
+eng_step_libs:"Fetching interface libs from {m}…",eng_step_core:"Downloading WebAssembly core…",eng_step_worker:"Preparing worker…",eng_step_boot:"Booting engine…",eng_step_legacy:"Loading compat core 0.11…",
+btn_eng_load:"Load engine now",btn_eng_retry:"Retry",btn_eng_reload:"Reload engine",
+btn_sw:"Download sw.js",btn_reload:"Reload",btn_close:"Close",
+d_page:"Page type",d_secure:"Secure context",d_iso:"COOP/COEP isolation",d_sab:"SharedArrayBuffer",d_net:"Network",d_browser:"Browser",d_err:"Last error",
+yes:"available",no:"unavailable",on:"enabled",off:"disabled",
+hint_file:'Page opened from disk <code>file://</code> which may restrict the engine. Prefer a local server: <code>python -m http.server</code> then <code>localhost:8000</code>.',
+hint_brave:'Using Brave: if scripts fail to load, disable <b>Shields</b> for this page temporarily (lion icon).',
+hint_sw:'To enable the much faster multi-thread core on HTTPS/localhost: download <code>sw.js</code>, place it next to the HTML file, then reload to activate COOP/COEP isolation.',
+log_h:"Event log",log_copy:"Copy",log_dl:"Download .txt",log_clear:"Clear",log_empty:"Log is empty so far.",
+l_theme:"Theme changed → {v}",l_lang:"Language changed → {v}",l_file:"New file: {name} ({size})",l_bad_type:"Rejected non-video file",
+l_bad_size:"Rejected file over 2 GB",l_set:"Setting changed: {v}",l_preset:"Preset → {v}",
+l_eng_start:"Engine load start (isolated={iso}, SAB={sab})",l_try:"Trying: {m} / core {core}",l_fail:"Failed {m}: {e}",
+l_ok:"Engine ready: {m} / {core}",l_comp_start:"Compression started…",l_comp_done:"Done: {before} → {after} (saved {save})",
+l_comp_cancel:"Compression cancelled",l_comp_err:"Compression error: {e}",l_sw_reg:"sw.js registered — reload to activate isolation",l_save:"Saved file: {name}",l_save_abort:"Save cancelled",
+t_need_file:"Choose a video file first",t_wait:"Wait for the current job to finish",t_bad_type:"Not a supported video file",
+t_big_size:"File exceeds the 2 GB limit",t_big_warn:"Large file — compression may take a long time",
+t_eng_fail:"Engine failed to load — see engine dialog",t_eng_ready:"Engine ready",t_done:"Video compressed successfully",
+t_cancel:"Compression cancelled",t_err_webm:"Compression failed — try MP4 or disable audio",t_err_gen:"Compression error — try other settings",
+t_grew:"Warning: output is larger than source",t_copied:"Log copied",t_saved:"File saved",
+}};
+let LANG = localStorage.getItem('vc-lang') || (((navigator.language||'')+'').toLowerCase().startsWith('ar')?'ar':'en');
+function t(k,v){
+  let s=(I18N[LANG]&&I18N[LANG][k])??I18N.ar[k]??k;
+  if(v)for(const key in v)s=s.split('{'+key+'}').join(v[key]);
+  return s;
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ─────────── السجل ─────────── */
+const LOG=[]; let logOpen=false;
+const ICONLOG={info:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>',
+ok:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>',
+warn:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 9v4m0 4h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>',
+err:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>'};
+function log(lv,k,v,raw){
+  const d=new Date();
+  const ts=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+'.'+String(d.getMilliseconds()).padStart(3,'0');
+  LOG.push({ts,lv,k,v,raw}); if(LOG.length>500)LOG.shift();
+  if(logOpen)renderLog();
+}
+function renderLog(){
+  const box=$('#logList');
+  if(!LOG.length){box.innerHTML='<div class="log-empty">'+esc(t('log_empty'))+'</div>';return;}
+  box.innerHTML=LOG.map(e=>'<div class="log-row '+e.lv+'"><span class="lt">'+e.ts+'</span><span class="li">'+ICONLOG[e.lv]+'</span><span class="lm">'+esc(e.raw||t(e.k,e.v))+'</span></div>').join('');
+  box.scrollTop=box.scrollHeight;
+}
+
+/* ─────────── أدوات ─────────── */
+function formatBytes(b){if(!isFinite(b)||b<=0)return '—';const u=LANG==='ar'?['بايت','ك.ب','م.ب','ج.ب']:['B','KB','MB','GB'];let i=0;while(b>=1024&&i<u.length-1){b/=1024;i++;}return (i===0?b:b.toFixed(b>=100?0:1))+' '+u[i];}
+const fmtClock=s=>{s=Math.max(0,Math.floor(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');};
+const extOf=n=>(n.split('.').pop()||'').toLowerCase();
+let toastTimer=null;
+function toast(msg,kind='info'){
+  const el=$('#toast');
+  el.className='toast show '+(kind==='error'?'error':kind==='success'?'success':'');
+  const ic=kind==='error'?ICONLOG.err:kind==='success'?ICONLOG.ok:ICONLOG.info;
+  el.innerHTML=ic+'<span>'+esc(msg)+'</span>';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),4500);
+}
+
+/* ─────────── المظهر (يتبع النظام) ─────────── */
+let themeMode=localStorage.getItem('vc-theme-mode')||'auto';
+const mqDark=matchMedia('(prefers-color-scheme: dark)');
+function resolvedTheme(){return themeMode==='auto'?(mqDark.matches?'dark':'light'):themeMode;}
+function applyTheme(mode,silent){
+  themeMode=mode;localStorage.setItem('vc-theme-mode',mode);
+  const th=resolvedTheme();
+  document.documentElement.dataset.theme=th;
+  $('#metaTheme').content=th==='dark'?'#242424':'#fafafa';
+  $('#icoAuto').classList.toggle('hidden',mode!=='auto');
+  $('#icoSun').classList.toggle('hidden',mode!=='light');
+  $('#icoMoon').classList.toggle('hidden',mode!=='dark');
+  $('#btnTheme').title=t('tt_theme')+': '+t(mode==='auto'?'th_auto':mode==='light'?'th_light':'th_dark');
+  if(!silent)log('info','l_theme',{v:t(mode==='auto'?'th_auto':mode==='light'?'th_light':'th_dark')});
+}
+mqDark.addEventListener?.('change',()=>{if(themeMode==='auto')applyTheme('auto',true);});
+$('#btnTheme').addEventListener('click',()=>applyTheme(themeMode==='auto'?'light':themeMode==='light'?'dark':'auto'));
+
+/* ─────────── اللغة ─────────── */
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.documentElement.dir=LANG==='ar'?'rtl':'ltr';
+  $$('[data-t]').forEach(el=>{el.textContent=t(el.dataset.t);});
+  $$('[data-t-html]').forEach(el=>{el.innerHTML=t(el.dataset.tHtml);});
+  $$('[data-t-title]').forEach(el=>el.title=t(el.dataset.tTitle));
+  document.title=t('doc_title');
+  $('#langBtn').textContent=LANG==='ar'?'EN':'ع';
+  $('#aboutFeats').innerHTML=t('about_feats');
+  renderPresets();paintEngine();renderLog();updateEstimate();
+}
+$('#langBtn').addEventListener('click',()=>{
+  LANG=LANG==='ar'?'en':'ar';localStorage.setItem('vc-lang',LANG);
+  log('info','l_lang',{v:LANG==='ar'?'العربية':'English'});applyLang();
+});
+
+/* ─────────── أيقونات ─────────── */
+const IC={cpu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M19 5l-2 2M7 17l-2 2"/></svg>',
+refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.6-6.3M21 3v6h-6"/></svg>',
+star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17l-6.1 3.6 1.4-6.8L2.2 9.1l6.9-.8Z"/></svg>',
+scale:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M8 21h8M12 6H6M12 6h6"/><path d="M6 6 3.5 12a3 3 0 0 0 5 0L6 6Zm12 0-2.5 6a3 3 0 0 0 5 0L18 6Z"/></svg>',
+box:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8Z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+fire:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 9a5 5 0 0 1-2 4 3.5 3.5 0 1 1-6-2.5c0-2 1.5-3 1.5-5C12 9 9 7 12 2Z"/></svg>'};
+
+/* ─────────── الإعدادات المسبقة ─────────── */
+const PRESETS={high:{k:'p_high',icon:'star',h:1080,fps:'30',crf:21,vpx:12,abr:'128'},
+balanced:{k:'p_bal',icon:'scale',h:720,fps:'30',crf:26,vpx:25,abr:'96'},
+small:{k:'p_small',icon:'box',h:480,fps:'24',crf:31,vpx:35,abr:'64'},
+max:{k:'p_max',icon:'fire',h:360,fps:'15',crf:36,vpx:45,abr:'32'}};
+function renderPresets(){
+  const seg=$('#presetSeg');seg.innerHTML='';
+  for(const[key,p]of Object.entries(PRESETS)){
+    const b=document.createElement('button');
+    b.type='button';b.className='seg'+(key===state.preset?' active':'');
+    b.setAttribute('role','radio');b.setAttribute('aria-checked',key===state.preset);
+    b.innerHTML=IC[p.icon]+'<span>'+t(p.k)+'</span>';
+    b.addEventListener('click',()=>{selectPreset(key);log('info','l_preset',{v:t(p.k)});saveSettings();});
+    seg.appendChild(b);
+  }
+}
+function selectPreset(key,apply=true){
+  state.preset=key;
+  $$('#presetSeg .seg').forEach((el,i)=>{const k=Object.keys(PRESETS)[i];el.classList.toggle('active',k===key);el.setAttribute('aria-checked',k===key);});
+  if(apply){const p=PRESETS[key];$('#selRes').value=String(p.h);$('#selFps').value=p.fps;$('#selAbr').value=p.abr;updateEstimate();}
+}
+
+/* ─────────── حفظ الإعدادات ─────────── */
+const SETTING_KEYS=[['selFormat','format'],['selRes','res'],['selFps','fps'],['selAbr','abr'],['swAudio','audio'],['swBitrate','cb'],['rngBitrate','cbv']];
+const SET_LABEL={selFormat:'r_fmt_h',selRes:'r_res_h',selFps:'r_fps_h',selAbr:'r_abr_h',swAudio:'r_keep_h',swBitrate:'r_cb_h',rngBitrate:'r_cbv_h'};
+function saveSettings(){
+  const o={preset:state.preset};
+  for(const[id,k]of SETTING_KEYS){const el=$('#'+id);o[k]=el.type==='checkbox'?el.checked:el.value;}
+  localStorage.setItem('vc-settings',JSON.stringify(o));
+}
+function loadSettings(){
+  try{const o=JSON.parse(localStorage.getItem('vc-settings')||'null');if(!o)return false;
+    for(const[id,k]of SETTING_KEYS){const el=$('#'+id);if(o[k]===undefined)continue;if(el.type==='checkbox')el.checked=!!o[k];else el.value=o[k];}
+    state.preset=PRESETS[o.preset]?o.preset:'balanced';return true;
+  }catch{return false;}
+}
+
+/* ═══════════════ المحرك ═══════════════ */
+const MIRRORS=[{label:'unpkg.com',npm:'https://unpkg.com/'},{label:'jsDelivr',npm:'https://cdn.jsdelivr.net/npm/'},{label:'jsDelivr (Fastly)',npm:'https://fastly.jsdelivr.net/npm/'},{label:'jsDelivr (GCore)',npm:'https://gcore.jsdelivr.net/npm/'}];
+const PATHS={ff:'@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js',util:'@ffmpeg/util@0.12.1/dist/umd/util.js',worker:'@ffmpeg/ffmpeg@0.12.10/dist/umd/worker.js',
+coreJs:'@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.js',coreWasm:'@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm',
+mtJs:'@ffmpeg/core-mt@0.12.6/dist/umd/ffmpeg-core.js',mtWasm:'@ffmpeg/core-mt@0.12.6/dist/umd/ffmpeg-core.wasm',
+legacy:'@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js',legacyCore:'@ffmpeg/core@0.11.0/dist/ffmpeg-core.js'};
+const engine={status:'idle',mirror:'—',core:'—',legacy:false,lastErr:''};
+
+function loadScript(src,ms=25000){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;
+  const to=setTimeout(()=>{s.remove();rej(new Error('timeout'));},ms);
+  s.onload=()=>{clearTimeout(to);res();};s.onerror=()=>{clearTimeout(to);s.remove();rej(new Error('blocked/404'));};
+  document.head.appendChild(s);});}
+async function ensureLibs(m){
+  if(!(window.FFmpegWASM&&window.FFmpegUtil)){await loadScript(m.npm+PATHS.ff);await loadScript(m.npm+PATHS.util);}
+  if(!(window.FFmpegWASM&&window.FFmpegUtil))throw new Error('libs-missing');
+}
+function paintEngine(){
+  const s=engine.status;
+  $('#engineChip').dataset.status=s;
+  $('#engineChipText').textContent=t(s==='loading'?'chip_loading':s==='ready'?(engine.legacy?'chip_compat':'chip_ready'):s==='error'?'chip_error':'chip_idle');
+  const st=$('#engStatus');st.dataset.s=s;
+  $('#engBub').innerHTML=s==='loading'?'<span class="spinner dark"></span>':s==='ready'?ICONLOG.ok:s==='error'?ICONLOG.warn:IC.cpu;
+  $('#engTitle').textContent=t(s==='loading'?'eng_load_h':s==='ready'?'eng_ready_h':s==='error'?'eng_err_h':'eng_idle_h');
+  $('#engSub').textContent=s==='ready'?t('eng_ready_p',{m:engine.mirror,core:engine.core}):s==='error'?t('eng_err_p',{e:engine.lastErr||'—'}):t(s==='loading'?'eng_load_p':'eng_idle_p');
+  const b=$('#engBtn');
+  b.disabled=s==='loading';
+  b.innerHTML=s==='loading'?'<span class="spinner"></span> '+esc(t('eng_load_h')):IC.refresh+'<span>'+esc(t(s==='ready'?'btn_eng_reload':s==='error'?'btn_eng_retry':'btn_eng_load'))+'</span>';
+}
+function setEngine(s,step,pct){engine.status=s;paintEngine();if(step!==undefined)$('#engStep').textContent=step;if(pct!==undefined)$('#engBar').style.width=pct+'%';}
+function fillDiag(){
+  const brave=('brave'in navigator);
+  const ua=navigator.userAgent;
+  const br=brave?'Brave':/Edg\//.test(ua)?'Edge':/Firefox\//.test(ua)?'Firefox':/Chrome\//.test(ua)?'Chrome':'Other';
+  const rows=[
+    [t('d_page'),location.protocol==='file:'?'file:// (local)':location.protocol+'//',location.protocol==='file:'],
+    [t('d_secure'),SECURE?t('yes'):t('no'),!SECURE],
+    [t('d_iso'),ISOLATED?t('on')+(swNeedsReload?' (+reload)':''):t('off'),!ISOLATED],
+    [t('d_sab'),SAB_OK?t('yes'):t('no'),!SAB_OK],
+    [t('d_net'),navigator.onLine?(LANG==='ar'?'متصل':'online'):(LANG==='ar'?'غير متصل':'offline'),!navigator.onLine],
+    [t('d_browser'),br,brave],
+    [t('d_err'),engine.lastErr||(LANG==='ar'?'لا يوجد':'none'),!!engine.lastErr],
+  ];
+  $('#engDiag').innerHTML=rows.map(([b,v,w])=>'<div class="diag'+(w?' warn':'')+'"><b>'+esc(b)+'</b><span>'+esc(v)+'</span></div>').join('');
+  $('#engHintFile').classList.toggle('hidden',location.protocol!=='file:');
+  $('#engHintBrave').classList.toggle('hidden',!brave);
+  $('#engHintSW').classList.toggle('hidden',!(SECURE&&!ISOLATED&&location.protocol!=='file:'));
+  $('#btnSWreload').classList.toggle('hidden',!swNeedsReload);
+}
+async function tryModern(m,mt){
+  log('info','l_try',{m:m.label,core:mt?'mt-0.12':'st-0.12'});
+  setEngine('loading',t('eng_step_libs',{m:m.label}),12);
+  await ensureLibs(m);
+  const FFm=(window.FFmpegWASM&&(window.FFmpegWASM.FFmpeg||window.FFmpegWASM.default))||window.FFmpeg;
+  if(!FFm||!window.FFmpegUtil)throw new Error('libs-missing');
+  setEngine('loading',t('eng_step_core'),40);
+  const cj=mt?PATHS.mtJs:PATHS.coreJs, cw=mt?PATHS.mtWasm:PATHS.coreWasm;
+  let coreURL,wasmURL,workerURL;
+  try{coreURL=await FFmpegUtil.toBlobURL(m.npm+cj,'text/javascript');wasmURL=await FFmpegUtil.toBlobURL(m.npm+cw,'application/wasm');}
+  catch(e){log('warn','l_fail',{m:m.label,e:'blob→direct URL'});coreURL=m.npm+cj;wasmURL=m.npm+cw;}
+  setEngine('loading',t('eng_step_worker'),62);
+  try{workerURL=await FFmpegUtil.toBlobURL(m.npm+PATHS.worker,'text/javascript');}catch(e){workerURL=m.npm+PATHS.worker;}
+  setEngine('loading',t('eng_step_boot'),85);
+  const inst=new FFm();
+  inst.on('log',({message})=>{if(DEBUG)console.debug('[ffmpeg]',message);});
+  await inst.load({coreURL,wasmURL,classWorkerURL:workerURL});
+  engine.mirror=m.label;engine.core=mt?'0.12-mt':'0.12-st';engine.legacy=false;
+  return inst;
+}
+function legacyAdapter(core){
+  const h={progress:[],log:[]};
+  core.setProgress(({ratio})=>h.progress.forEach(f=>f({progress:ratio})));
+  core.setLogger(({message})=>h.log.forEach(f=>f({message})));
+  return{legacy:true,on:(ev,cb)=>{(h[ev]||(h[ev]=[])).push(cb);},off:(ev,cb)=>{h[ev]=(h[ev]||[]).filter(f=>f!==cb);},
+    writeFile:(n,d)=>{core.FS('writeFile',n,d);},readFile:n=>core.FS('readFile',n),unlink:n=>{core.FS('unlink',n);},
+    exec:async args=>{await core.run(...args);return{code:0};},terminate:()=>{try{core.exit();}catch(e){}}};
+}
+async function tryLegacy(m){
+  log('info','l_try',{m:m.label,core:'legacy-0.11'});
+  setEngine('loading',t('eng_step_legacy'),45);
+  await loadScript(m.npm+PATHS.legacy);
+  if(!window.FFmpeg||!window.FFmpeg.createFFmpeg)throw new Error('legacy-missing');
+  const core=window.FFmpeg.createFFmpeg({log:DEBUG,corePath:m.npm+PATHS.legacyCore});
+  setEngine('loading',t('eng_step_boot'),75);
+  await core.load();
+  engine.mirror=m.label;engine.core='0.11-compat';engine.legacy=true;
+  return legacyAdapter(core);
+}
+const errMsg=e=>((e&&e.message)||String(e)).slice(0,110);
+async function doLoad(){
+  const pref=Math.min(Math.max(+(localStorage.getItem('vc-mirror')||0),0),MIRRORS.length-1);
+  $('#engMirror').value=String(pref);
+  log('info','l_eng_start',{iso:ISOLATED?'1':'0',sab:SAB_OK?'1':'0'});
+  let lastErr=null;
+  for(let i=0;i<MIRRORS.length;i++){
+    const m=MIRRORS[(pref+i)%MIRRORS.length];
+    if(ISOLATED){try{return await tryModern(m,true);}catch(e){lastErr=e;log('warn','l_fail',{m:m.label,e:errMsg(e)});}}
+    try{return await tryModern(m,false);}catch(e){lastErr=e;log('warn','l_fail',{m:m.label,e:errMsg(e)});}
+    if(SAB_OK){try{return await tryLegacy(m);}catch(e){lastErr=e;log('warn','l_fail',{m:m.label,e:errMsg(e)});}}
+    else log('warn','l_fail',{m:m.label,e:'legacy skipped (no SharedArrayBuffer)'});
+  }
+  engine.lastErr=errMsg(lastErr);throw lastErr||new Error('engine-unavailable');
+}
+async function loadEngine(){
+  if(ff)return ff;
+  if(loadPromise)return loadPromise;
+  loadPromise=doLoad()
+    .then(inst=>{ff=inst;setEngine('ready','',100);log('ok','l_ok',{m:engine.mirror,core:engine.core});fillDiag();return ff;})
+    .catch(e=>{setEngine('error','',100);fillDiag();throw e;})
+    .finally(()=>{loadPromise=null;});
+  return loadPromise;
+}
+function resetEngine(){try{ff&&ff.terminate();}catch(e){}ff=null;loadPromise=null;setEngine('idle','',0);}
+
+/* sw.js (COOP/COEP) */
+const SWJS=['/* COOP/COEP enabler — Video Compressor (Zerouki Ahmed Moaadh) */',
+'self.addEventListener("install",()=>self.skipWaiting());',
+'self.addEventListener("activate",(e)=>e.waitUntil(self.clients.claim()));',
+'self.addEventListener("fetch",(e)=>{',
+'  if(e.request.cache==="only-if-cached"&&e.request.mode!=="same-origin")return;',
+'  e.respondWith(fetch(e.request).then((r)=>{',
+'    const h=new Headers(r.headers);',
+'    if(e.request.mode==="navigate"){h.set("Cross-Origin-Embedder-Policy","require-corp");h.set("Cross-Origin-Opener-Policy","same-origin");}',
+'    else{h.set("Cross-Origin-Resource-Policy","cross-origin");}',
+'    return new Response(r.body,{status:r.status,statusText:r.statusText,headers:h});',
+'  }).catch(()=>fetch(e.request)));',
+'});'].join('\n');
+async function probeSW(){
+  if(!('serviceWorker'in navigator)||!SECURE||location.protocol==='file:')return;
+  try{
+    const r=await fetch('sw.js',{method:'HEAD',cache:'no-store'});
+    if(!r.ok)return;
+    await navigator.serviceWorker.register('sw.js');
+    log('info','l_sw_reg');
+    if(!ISOLATED)swNeedsReload=true;
+  }catch(e){}
+  fillDiag();
+}
+$('#btnSWdl').addEventListener('click',()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([SWJS],{type:'text/javascript'}));
+  a.download='sw.js';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+});
+$('#btnSWreload').addEventListener('click',()=>location.reload());
+
+/* واجهة نافذة المحرك */
+$('#engMirror').innerHTML=MIRRORS.map((m,i)=>'<option value="'+i+'">'+m.label+'</option>').join('');
+$('#engMirror').addEventListener('change',e=>localStorage.setItem('vc-mirror',e.target.value));
+$('#engineChip').addEventListener('click',()=>{fillDiag();$('#engineDialog').showModal();});
+$('#engCloseX').addEventListener('click',()=>$('#engineDialog').close());
+$('#engClose').addEventListener('click',()=>$('#engineDialog').close());
+$('#engBtn').addEventListener('click',async()=>{
+  if(engine.status==='loading')return;
+  if(ff)resetEngine();
+  fillDiag();
+  try{await loadEngine();toast(t('t_eng_ready'),'success');}
+  catch(e){toast(t('t_eng_fail'),'error');}
+});
+
+/* ─────────── الملف ─────────── */
+const KNOWN=['mp4','mov','m4v','mkv','webm','avi','mpg','mpeg','ts','flv','wmv','3gp','ogv'];
+const MAX_BYTES=2*1024**3,WARN_BYTES=800*1024**2;
+$('#btnBrowse').addEventListener('click',e=>{e.stopPropagation();$('#fileInput').click();});
+$('#btnChange').addEventListener('click',()=>$('#fileInput').click());
+$('#btnAnother').addEventListener('click',()=>$('#fileInput').click());
+$('#dropInner').addEventListener('click',()=>{if($('#fileState').classList.contains('hidden'))$('#fileInput').click();});
+$('#dropInner').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#fileInput').click();}});
+$('#fileInput').addEventListener('change',e=>{handleFile(e.target.files&&e.target.files[0]);e.target.value='';});
+['dragenter','dragover'].forEach(ev=>$('#dropzone').addEventListener(ev,e=>{e.preventDefault();if(!state.running)$('#dropzone').classList.add('drag');}));
+['dragleave','drop'].forEach(ev=>$('#dropzone').addEventListener(ev,e=>{e.preventDefault();$('#dropzone').classList.remove('drag');}));
+$('#dropzone').addEventListener('drop',e=>{if(!state.running)handleFile(e.dataTransfer.files&&e.dataTransfer.files[0]);});
+window.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='o'){e.preventDefault();$('#fileInput').click();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'&&!$('#btnCompress').disabled){e.preventDefault();compress();}
+});
+function handleFile(file){
+  if(!file)return;
+  if(state.running){toast(t('t_wait'),'error');return;}
+  const ext=extOf(file.name);
+  if(!((file.type&&file.type.startsWith('video/'))||KNOWN.includes(ext))){toast(t('t_bad_type'),'error');log('warn','l_bad_type');return;}
+  if(file.size>MAX_BYTES){toast(t('t_big_size'),'error');log('warn','l_bad_size');return;}
+  if(file.size>WARN_BYTES)toast(t('t_big_warn'));
+  setFile(file);
+  loadEngine().catch(()=>{});
+}
+function setFile(file){
+  if(inputURL)URL.revokeObjectURL(inputURL);
+  state.file=file;inputURL=URL.createObjectURL(file);
+  $('#emptyState').classList.add('hidden');$('#fileState').classList.remove('hidden');
+  $('#resultCard').classList.add('hidden');
+  if(outputURL){URL.revokeObjectURL(outputURL);outputURL=null;}
+  $('#fileName').textContent=file.name;
+  $('#chipSize').textContent=formatBytes(file.size);
+  $('#chipDuration').textContent='…';$('#chipDims').textContent='…';
+  const v=$('#previewVideo');v.src=inputURL;
+  v.onloadedmetadata=()=>{meta.duration=v.duration;meta.width=v.videoWidth;meta.height=v.videoHeight;
+    $('#chipDuration').textContent=fmtClock(v.duration);$('#chipDims').textContent=v.videoWidth+'×'+v.videoHeight;updateEstimate();};
+  $('#btnCompress').disabled=false;
+  log('info','l_file',{name:file.name,size:formatBytes(file.size)});
+  updateEstimate();
+}
+
+/* ─────────── التقدير ─────────── */
+function updateEstimate(){
+  const el=$('#estSize');
+  if(!state.file||!meta.duration){el.textContent='—';return;}
+  let vbps;
+  if($('#swBitrate').checked)vbps=+$('#rngBitrate').value*1000;
+  else{
+    const p=PRESETS[state.preset],isVpx=$('#selFormat').value==='webm';
+    const eff=isVpx?Math.round(p.vpx*0.55):p.crf;
+    const bpp=0.1*Math.pow(2,(23-eff)/4);
+    const rv=$('#selRes').value;
+    const h=rv==='orig'?(meta.height||720):Math.min(+rv,meta.height||720);
+    const w=meta.width?Math.round(h*meta.width/meta.height):h*16/9;
+    const fps=$('#selFps').value==='auto'?30:+$('#selFps').value;
+    vbps=w*h*fps*bpp;
+  }
+  const abps=$('#swAudio').checked?+$('#selAbr').value*1000:0;
+  el.textContent='≈ '+formatBytes(meta.duration*(vbps+abps)/8*1.04);
+}
+['selFormat','selRes','selFps','selAbr'].forEach(id=>$('#'+id).addEventListener('change',e=>{log('info','l_set',{v:t(SET_LABEL[id])+' → '+e.target.selectedOptions[0].textContent});updateEstimate();saveSettings();}));
+$('#swAudio').addEventListener('change',e=>{$('#selAbr').disabled=!e.target.checked;log('info','l_set',{v:t('r_keep_h')+' → '+(e.target.checked?'ON':'OFF')});updateEstimate();saveSettings();});
+$('#swBitrate').addEventListener('change',e=>{$('#bitrateRow').classList.toggle('hidden',!e.target.checked);log('info','l_set',{v:t('r_cb_h')+' → '+(e.target.checked?'ON':'OFF')});updateEstimate();saveSettings();});
+$('#rngBitrate').addEventListener('input',e=>{$('#bitrateVal').textContent=e.target.value+' kbps';updateEstimate();saveSettings();});
+$('#rngBitrate').addEventListener('change',e=>log('info','l_set',{v:t('r_cbv_h')+' → '+e.target.value+'k'}));
+
+/* ─────────── أوامر FFmpeg ─────────── */
+function buildArgs(inName,outName){
+  const fmt=$('#selFormat').value,isVpx=fmt==='webm',p=PRESETS[state.preset];
+  const filters=[];const rv=$('#selRes').value;
+  filters.push(rv==='orig'?'scale=trunc(iw/2)*2:trunc(ih/2)*2':'scale=-2:\'min('+rv+',trunc(ih/2)*2)\'');
+  const fv=$('#selFps').value;if(fv!=='auto')filters.push('fps='+fv);
+  const args=['-i',inName,'-y','-vf',filters.join(','),'-c:v',isVpx?'libvpx':'libx264'];
+  if(!isVpx){args.push('-preset','veryfast','-pix_fmt','yuv420p');if(fmt==='mp4')args.push('-movflags','+faststart');}
+  if($('#swBitrate').checked){const v=+$('#rngBitrate').value;args.push('-b:v',v+'k');if(!isVpx)args.push('-maxrate',Math.round(v*1.5)+'k','-bufsize',v*2+'k');}
+  else if(isVpx)args.push('-b:v','0','-crf',String(p.vpx));
+  else args.push('-crf',String(p.crf));
+  if($('#swAudio').checked)args.push('-c:a',isVpx?'libopus':'aac','-b:a',$('#selAbr').value+'k');
+  else args.push('-an');
+  args.push(outName);return args;
+}
+function lockUI(on){
+  $$('select, .seg, input[type=range], .switch input, #btnChange').forEach(el=>el.disabled=on||(el===$('#selAbr')&&!$('#swAudio').checked));
+  $('#dropzone').classList.toggle('locked',on);
+}
+
+/* ─────────── الضغط ─────────── */
+async function compress(){
+  if(!state.file){toast(t('t_need_file'),'error');return;}
+  if(state.running)return;
+  state.running=true;state.cancel=false;
+  $('#resultCard').classList.add('hidden');
+  if(outputURL){URL.revokeObjectURL(outputURL);outputURL=null;}
+  lockUI(true);
+  $('#btnCompress').disabled=true;
+  $('#btnCompress').innerHTML='<span class="spinner"></span> …';
+  try{await loadEngine();}
+  catch(e){toast(t('t_eng_fail'),'error');fillDiag();$('#engineDialog').showModal();return resetAfterJob();}
+  log('info','l_comp_start');
+  $('#btnCompress').classList.add('hidden');
+  const pw=$('#progressWrap');
+  pw.classList.remove('hidden','indeterminate');
+  $('#progressFill').style.width='0%';$('#progressPct').textContent='0%';
+  startTs=Date.now();
+  elapsedTimer=setInterval(()=>{$('#progressElapsed').textContent=fmtClock((Date.now()-startTs)/1000);},500);
+  acquireWakeLock();
+  const srcExt=KNOWN.includes(extOf(state.file.name))?extOf(state.file.name):'mp4';
+  const outExt=$('#selFormat').value;
+  const inName='input.'+srcExt,outName='output.'+outExt;
+  const onProgress=({progress})=>{
+    if(isFinite(progress)&&progress>0){pw.classList.remove('indeterminate');const pc=Math.min(100,Math.round(progress*100));$('#progressFill').style.width=pc+'%';$('#progressPct').textContent=pc+'%';}
+    else pw.classList.add('indeterminate');
+  };
+  try{
+    const data=(window.FFmpegUtil&&!ff.legacy)?await FFmpegUtil.fetchFile(state.file):new Uint8Array(await state.file.arrayBuffer());
+    await ff.writeFile(inName,data);
+    ff.on('progress',onProgress);
+    const{code}=await ff.exec(buildArgs(inName,outName));
+    ff.off('progress',onProgress);
+    if(code!==0)throw new Error('exit-'+code);
+    const out=await ff.readFile(outName);
+    const mime=outExt==='webm'?'video/webm':outExt==='mkv'?'video/x-matroska':'video/mp4';
+    const blob=new Blob([out],{type:mime});
+    try{await ff.unlink(inName);await ff.unlink(outName);}catch(e){}
+    finishSuccess(blob,outExt);
+    toast(t('t_done'),'success');
+  }catch(err){
+    try{ff.off('progress',onProgress);}catch(e){}
+    if(state.cancel){toast(t('t_cancel'));log('warn','l_comp_cancel');resetEngine();}
+    else{console.error(err);log('err','l_comp_err',{e:errMsg(err)});
+      toast($('#selFormat').value==='webm'&&$('#swAudio').checked?t('t_err_webm'):t('t_err_gen'),'error');
+      try{await ff.unlink(inName);}catch(e){}}
+  }finally{resetAfterJob();}
+}
+function resetAfterJob(){
+  state.running=false;
+  clearInterval(elapsedTimer);releaseWakeLock();lockUI(false);
+  $('#progressWrap').classList.add('hidden');
+  const b=$('#btnCompress');
+  b.classList.remove('hidden');b.disabled=!state.file;
+  b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 21h14"/></svg><span>'+esc(t('btn_compress'))+'</span>';
+}
+function finishSuccess(blob,outExt){
+  outputBlob=blob;
+  outputName=state.file.name.replace(/\.[^.]+$/,'')+(LANG==='ar'?'-مضغوط':'-compressed')+'.'+outExt;
+  outputURL=URL.createObjectURL(blob);
+  $('#outputVideo').src=outputURL;
+  const before=state.file.size,after=blob.size,save=(1-after/before)*100;
+  $('#statBefore').textContent=formatBytes(before);
+  $('#statAfter').textContent=formatBytes(after);
+  $('#statSave').textContent=(save>=0?'−':'+')+Math.abs(save).toFixed(1)+'%';
+  $('#statSaveBox').className='stat '+(save>=0?'good':'bad');
+  $('#resultSummary').textContent=save>=0?t('res_sum_save',{saved:formatBytes(before-after)}):t('res_sum_grow');
+  $('#resultCard').classList.remove('hidden');
+  $('#resultCard').scrollIntoView({behavior:'smooth',block:'nearest'});
+  log('ok','l_comp_done',{before:formatBytes(before),after:formatBytes(after),save:Math.abs(save).toFixed(1)+'%'});
+  if(save<0)toast(t('t_grew'),'error');
+  try{navigator.setAppBadge&&navigator.setAppBadge(1);}catch(e){}
+}
+$('#btnCompress').addEventListener('click',compress);
+$('#btnCancel').addEventListener('click',()=>{state.cancel=true;try{ff&&ff.terminate();}catch(e){}ff=null;loadPromise=null;});
+
+/* ─────────── الحفظ عبر واجهة النظام ─────────── */
+$('#btnSave').addEventListener('click',async()=>{
+  if(!outputBlob)return;
+  if(window.showSaveFilePicker){
+    try{
+      const ext=outputName.split('.').pop();
+      const handle=await showSaveFilePicker({suggestedName:outputName,types:[{description:'Video',accept:{['video/'+(ext==='mkv'?'x-matroska':ext)]:['.'+ext]}}]});
+      const w=await handle.createWritable();await w.write(outputBlob);await w.close();
+      log('ok','l_save',{name:outputName});toast(t('t_saved'),'success');return;
+    }catch(e){if(e.name==='AbortError'){log('info','l_save_abort');return;}}
+  }
+  const a=document.createElement('a');a.href=outputURL;a.download=outputName;a.click();
+  log('ok','l_save',{name:outputName});toast(t('t_saved'),'success');
+});
+
+/* ─────────── تكامل النظام ─────────── */
+async function acquireWakeLock(){try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}}
+function releaseWakeLock(){try{wakeLock&&wakeLock.release();}catch(e){}wakeLock=null;}
+document.addEventListener('visibilitychange',()=>{
+  if(state.running&&document.visibilityState==='visible')acquireWakeLock();
+  if(document.visibilityState==='visible'){try{navigator.clearAppBadge&&navigator.clearAppBadge();}catch(e){}}
+});
+window.addEventListener('beforeunload',e=>{if(state.running){e.preventDefault();e.returnValue='';}});
+
+/* ─────────── النوافذ ─────────── */
+$('#btnLog').addEventListener('click',()=>{logOpen=true;renderLog();$('#logDialog').showModal();});
+$('#logDialog').addEventListener('close',()=>{logOpen=false;});
+$('#logCloseX').addEventListener('click',()=>$('#logDialog').close());
+$('#logClear').addEventListener('click',()=>{LOG.length=0;renderLog();});
+$('#logCopy').addEventListener('click',async()=>{
+  const txt=LOG.map(e=>e.ts+' ['+e.lv+'] '+(e.raw||t(e.k,e.v))).join('\n');
+  try{await navigator.clipboard.writeText(txt);toast(t('t_copied'),'success');}catch(e){}
+});
+$('#logDl').addEventListener('click',()=>{
+  const txt=LOG.map(e=>e.ts+' ['+e.lv+'] '+(e.raw||t(e.k,e.v))).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download='video-compressor-log.txt';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+});
+$('#btnAbout').addEventListener('click',()=>$('#aboutDialog').showModal());
+$('#btnCloseAbout').addEventListener('click',()=>$('#aboutDialog').close());
+$$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close();}));
+
+/* ─────────── التهيئة ─────────── */
+(function init(){
+  applyTheme(themeMode,true);
+  applyLang();
+  renderPresets();
+  const had=loadSettings();
+  selectPreset(state.preset,!had);
+  $('#bitrateRow').classList.toggle('hidden',!$('#swBitrate').checked);
+  $('#bitrateVal').textContent=$('#rngBitrate').value+' kbps';
+  $('#selAbr').disabled=!$('#swAudio').checked;
+  setEngine('idle','',0);
+  fillDiag();
+  updateEstimate();
+  probeSW();
+})();
+</script>
+</body>
+</html>
